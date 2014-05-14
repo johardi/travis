@@ -2,7 +2,7 @@ Travis Project
 ==============
 
 ```
-T.R.A.V.I.S : Trully Resonable Asking Very Intelligent System
+T.R.A.V.I.S : Totally Right Asking Very Intelligent System
 ```
 
 This project is a derived work from NLP-Reduce technique by Lorenz Fischer.
