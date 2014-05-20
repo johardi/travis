@@ -2,20 +2,7 @@ Travis Project
 ==============
 
 ```
-T.R.A.V.I.S : Totally Right Asking Very Intelligent System
-```
-
-This project is a derived work from NLP-Reduce technique by Lorenz Fischer.
-
-```
-NLP-Reduce is a natural language query interface that allows its users to enter full English
-questions, sentence fragments, and keywords.  It processes queries a s bag of words and only
-employs a reduced set of natural language processing techniques, such as stemming and synonym
-expansion.
-
-Dependencies between word or phrases in the queries are only identified by the relationships
-that exit between the elements in a queries knowledge base. This weakness is also its major
-strength, as it is completely portable and robust to ungrammatical or deficient input.
+T.R.A.V.I.S : Totally Resonable Asking Very Intelligent System
 ```
 
 
