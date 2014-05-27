@@ -1,0 +1,84 @@
+find profile
+-----------------
+FIND (profile)/ENTITY
+=================
+find suspect profile
+-----------------
+FIND (suspect profile)/ENTITY
+=================
+find trial witness profile
+-----------------
+FIND (trial witness profile)/ENTITY
+=================
+find profile
+refine has first name John
+-----------------
+FIND (profile)/ENTITY
+REFINE (has first name)/PREDICATE (=)/OP ("John")/VALUE
+=================
+find profile
+refine has first name John
+refine lives in city "Upper Manhattan"
+-----------------
+FIND (profile)/ENTITY
+REFINE (has first name)/PREDICATE (=)/OP ("John")/VALUE
+REFINE (lives in city)/PREDICATE (=)/OP ("Upper Manhattan")/VALUE
+=================
+find profile
+refine has first name John
+refine lives in city "Upper Manhattan"
+refine year of birth 1990
+-----------------
+FIND (profile)/ENTITY
+REFINE (has first name)/PREDICATE (=)/OP ("John")/VALUE
+REFINE (lives in city)/PREDICATE (=)/OP ("Upper Manhattan")/VALUE
+REFINE (year of birth)/PREDICATE (=)/OP (1990)/VALUE
+=================
+find profile
+refine has first name = John
+refine lives in city = Upper Manhattan
+refine year of birth = 1990
+-----------------
+FIND (profile)/ENTITY
+REFINE (has first name)/PREDICATE (=)/OP ("John")/VALUE
+REFINE (lives in city)/PREDICATE (=)/OP ("Upper Manhattan")/VALUE
+REFINE (year of birth)/PREDICATE (=)/OP (1990)/VALUE
+=================
+find profile
+refine year of birth < 1990
+refine annual earning less than 80000
+refine has body height under 170
+-----------------
+FIND (profile)/ENTITY
+REFINE (year of birth)/PREDICATE (<)/OP (1990)/VALUE
+REFINE (annual earning)/PREDICATE (<)/OP (80000)/VALUE
+REFINE (has body height)/PREDICATE (<)/OP (170)/VALUE
+=================
+find profile
+refine year of birth <= 1990
+refine has annual earning no more than 80000
+-----------------
+FIND (profile)/ENTITY
+REFINE (year of birth)/PREDICATE (<=)/OP (1990)/VALUE
+REFINE (has annual earning)/PREDICATE (<=)/OP (80000)/VALUE
+=================
+find profile
+refine year of birth >= 1990
+refine has annual earning no less than 80000
+-----------------
+FIND (profile)/ENTITY
+REFINE (year of birth)/PREDICATE (>=)/OP (1990)/VALUE
+REFINE (has annual earning)/PREDICATE (>=)/OP (80000)/VALUE
+=================
+find profile
+refine has last name Smith?
+-----------------
+FIND (profile)/ENTITY
+REFINE (has last name)/PREDICATE (=?)/OP ("Smith")/VALUE
+=================
+find profile
+refine has year of birth between 1990 and 1995
+-----------------
+FIND (profile)/ENTITY
+REFINE (has year of birth)/PREDICATE (between)/OP (1990)/VALUE (1995)/VALUE
+=================
