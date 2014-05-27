@@ -82,3 +82,13 @@ refine has year of birth between 1990 and 1995
 FIND (profile)/ENTITY
 REFINE (has year of birth)/PREDICATE (between)/OP (1990)/VALUE (1995)/VALUE
 =================
+find profile
+refine has associate with name "Mary Smith"
+refine has passport with valid year between 2009 and 2013
+refine has origin with geographic location "Eastern Europe"
+-----------------
+FIND (profile)/ENTITY
+REFINE (has associate)/PREDICATE WITH (name)/PREDICATE (=)/OP ("Mary Smith")/VALUE
+REFINE (has passport)/PREDICATE WITH (valid year)/PREDICATE (between)/OP (2009)/VALUE (2013)/VALUE
+REFINE (has origin)/PREDICATE WITH (geographic location)/PREDICATE (=)/OP ("Eastern Europe")/VALUE
+=================
