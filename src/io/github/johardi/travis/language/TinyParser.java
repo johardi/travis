@@ -27,6 +27,7 @@ import io.github.johardi.travis.language.expression.LessThanEquals;
 import io.github.johardi.travis.language.expression.NumericValue;
 import io.github.johardi.travis.language.expression.RelationalOperator;
 import io.github.johardi.travis.language.expression.StringValue;
+import io.github.johardi.travis.language.expression.WithExpression;
 import io.github.johardi.travis.language.model.Find;
 import io.github.johardi.travis.language.model.Query;
 import io.github.johardi.travis.language.model.Refine;
@@ -91,27 +92,65 @@ public class TinyParser implements IParser
       
       stmt = truncate(stmt, Keyword.REFINE, 0); // 0 = start from beginning of the string
       
-      String op = operator(stmt);
-      int opIndex = stmt.indexOf(op);
-      if (op.equals("")) {
-         int firstIndexOfQuotes = stmt.indexOf("\"");
-         if (firstIndexOfQuotes != -1) {
-            opIndex = firstIndexOfQuotes - 1;
-         }
-         else {
-            opIndex = stmt.lastIndexOf(" ");
-         }
+      String predicate = null;
+      IExpression expression = null;
+      if (stmt.contains(Keyword.WITH)) {
+         int withBeginIndex = stmt.indexOf(Keyword.WITH);
+         predicate = predicate(stmt, withBeginIndex);
+         stmt = StringUtils.substring(stmt, withBeginIndex, stmt.length());
+         expression = with(stmt);
       }
-      int opLength = op.length();
-      
-      String predicate = predicate(stmt, opIndex);
-      String value = value(stmt, opIndex + opLength);
-      IExpression expression = expression(relational(op), value);
-      
+      else {
+         String op = operator(stmt);
+         int opBeginIndex = stmt.indexOf(op);
+         if (op.equals("")) {
+            int firstIndexOfQuotes = stmt.indexOf("\"");
+            if (firstIndexOfQuotes != -1) {
+               opBeginIndex = firstIndexOfQuotes - 1;
+            }
+            else {
+               opBeginIndex = stmt.lastIndexOf(" ");
+            }
+         }
+         int opLength = op.length();
+         
+         predicate = predicate(stmt, opBeginIndex);
+         String value = value(stmt, opBeginIndex + opLength);
+         expression = assign(opType(op), value);
+      }
       refine.setPredicate(predicate);
       refine.setExpression(expression);
       
       return refine;
+   }
+
+   private IExpression with(String stmt)
+   {
+      WithExpression with = new WithExpression();
+      
+      stmt = truncate(stmt, Keyword.WITH, 0); // 0 = start from beginning of the string
+      
+      String op = operator(stmt);
+      int opBeginIndex = stmt.indexOf(op);
+      if (op.equals("")) {
+         int firstIndexOfQuotes = stmt.indexOf("\"");
+         if (firstIndexOfQuotes != -1) {
+            opBeginIndex = firstIndexOfQuotes - 1;
+         }
+         else {
+            opBeginIndex = stmt.lastIndexOf(" ");
+         }
+      }
+      int opLength = op.length();
+      
+      String predicate = predicate(stmt, opBeginIndex);
+      String value = value(stmt, opBeginIndex + opLength);
+      IExpression expression = assign(opType(op), value);
+      
+      with.setPredicate(predicate);
+      with.setExpression(expression);
+      
+      return with;
    }
 
    private String operator(String stmt)
@@ -134,20 +173,7 @@ public class TinyParser implements IParser
       return StringUtils.substring(stmt, beginIndex, stmt.length());
    }
 
-   private RelationalOperator relational(String op)
-   {
-      switch (symbol(op)) {
-         case OP_EQ: return new EqualsTo();
-         case OP_LT: return new LessThan();
-         case OP_GT: return new GreaterThan();
-         case OP_LTE: return new LessThanEquals();
-         case OP_GTE: return new GreaterThanEquals();
-         case OP_BETWEEN: return new Between();
-      }
-      throw new RuntimeException("Unknown operator: " + op);
-   }
-
-   private IExpression expression(RelationalOperator op, String value)
+   private IExpression assign(RelationalOperator op, String value)
    {
       List<String> values = Arrays.asList(value.split("\\s*and\\s*|\\s*,\\s*"));
       for (String v : values) {
@@ -172,7 +198,20 @@ public class TinyParser implements IParser
 
    private String truncate(String stmt, String word, int fromIndex)
    {
-      return StringUtils.substring(stmt, word.length() + fromIndex, stmt.length());
+      return StringUtils.substring(stmt, fromIndex + word.length(), stmt.length());
+   }
+
+   private RelationalOperator opType(String op)
+   {
+      switch (symbol(op)) {
+         case OP_EQ: return new EqualsTo();
+         case OP_LT: return new LessThan();
+         case OP_GT: return new GreaterThan();
+         case OP_LTE: return new LessThanEquals();
+         case OP_GTE: return new GreaterThanEquals();
+         case OP_BETWEEN: return new Between();
+      }
+      throw new RuntimeException("Unknown operator: " + op);
    }
 
    private int symbol(String input)

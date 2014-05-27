@@ -19,6 +19,29 @@ package io.github.johardi.travis.language.expression;
 
 public class WithExpression implements IExpression
 {
+   private String mPredicate;
+   private IExpression mExpression;
+
+   public void setPredicate(String predicate)
+   {
+      mPredicate = predicate;
+   }
+
+   public String getPredicate()
+   {
+      return mPredicate;
+   }
+
+   public void setExpression(IExpression expression)
+   {
+      mExpression = expression;
+   }
+
+   public IExpression getExpression()
+   {
+      return mExpression;
+   }
+
    @Override
    public void accept(IExpressionVisitor visitor)
    {
