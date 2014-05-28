@@ -26,7 +26,6 @@ public final class Keyword
 
    public static final String FIND = "find";
    public static final String REFINE = "refine";
-   public static final String WITH = "with";
 
    /* Expression operators */
 
@@ -58,15 +57,23 @@ public final class Keyword
 
    public static final String BETWEEN = "between";
 
+   public static final String WITH = "with"; // compound operator
+
+   /* Keyword lists */
+
    public static final List<String> ALL_COMMANDS = new ArrayList<String>();
    static {
       ALL_COMMANDS.add(FIND);
       ALL_COMMANDS.add(REFINE);
-      ALL_COMMANDS.add(WITH);
    }
 
    public static final List<String> ALL_OPERATORS = new ArrayList<String>();
    static {
+      /*
+       * Compound operators
+       */
+      ALL_OPERATORS.add(WITH);
+      
       /*
        * Symbolic operators are on the top of the list
        */
