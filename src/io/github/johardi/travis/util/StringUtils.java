@@ -54,6 +54,11 @@ public class StringUtils
       return text.toUpperCase();
    }
 
+   public static String truncate(String text, String word)
+   {
+      return text.replaceAll(word, "").trim().replaceAll(" +", " ");
+   }
+
    public static String substring(String text, int beginIndex, int endIndex)
    {
       return text.substring(beginIndex, endIndex).trim();

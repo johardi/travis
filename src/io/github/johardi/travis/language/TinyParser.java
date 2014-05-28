@@ -21,7 +21,6 @@ import io.github.johardi.travis.language.expression.Between;
 import io.github.johardi.travis.language.expression.EqualsTo;
 import io.github.johardi.travis.language.expression.GreaterThan;
 import io.github.johardi.travis.language.expression.GreaterThanEquals;
-import io.github.johardi.travis.language.expression.IExpression;
 import io.github.johardi.travis.language.expression.LessThan;
 import io.github.johardi.travis.language.expression.LessThanEquals;
 import io.github.johardi.travis.language.expression.NumericValue;
@@ -60,10 +59,12 @@ public class TinyParser implements IParser
          String stmt = mInputLines[i];
          switch (symbol(stmt)) {
             case K_FIND:
+               stmt = StringUtils.truncate(stmt, Keyword.FIND);
                Find find = find(stmt);
                query.setFind(find);
                break;
             case K_REFINE:
+               stmt = StringUtils.truncate(stmt, Keyword.REFINE);
                Refine refine = refine(stmt);
                query.addRefine(refine);
                break;
@@ -75,8 +76,6 @@ public class TinyParser implements IParser
    private Find find(String stmt)
    {
       Find find = new Find();
-      
-      stmt = truncate(stmt, Keyword.FIND, 0); // 0 = start from beginning of the string
       find.setEntity(entity(stmt));
       return find;
    }
@@ -90,67 +89,61 @@ public class TinyParser implements IParser
    {
       Refine refine = new Refine();
       
-      stmt = truncate(stmt, Keyword.REFINE, 0); // 0 = start from beginning of the string
+      String op = operator(stmt);
+      int opBeginIndex = operatorBeginIndex(stmt, op);
+      int opLength = op.length();
+      int opEndIndex = opBeginIndex + opLength;
+      String predicate = predicate(stmt, opBeginIndex);
+      refine.setPredicate(predicate);
       
-      String predicate = null;
-      IExpression expression = null;
-      if (stmt.contains(Keyword.WITH)) {
-         int withBeginIndex = stmt.indexOf(Keyword.WITH);
-         predicate = predicate(stmt, withBeginIndex);
-         stmt = StringUtils.substring(stmt, withBeginIndex, stmt.length());
-         expression = with(stmt);
+      if (op.equals(Keyword.WITH)) {
+         stmt = StringUtils.substring(stmt, opBeginIndex, stmt.length());
+         stmt = StringUtils.truncate(stmt, Keyword.WITH);
+         WithExpression with = with(stmt);
+         refine.setExpression(with);
       }
       else {
-         String op = operator(stmt);
-         int opBeginIndex = stmt.indexOf(op);
-         if (op.equals("")) {
-            int firstIndexOfQuotes = stmt.indexOf("\"");
-            if (firstIndexOfQuotes != -1) {
-               opBeginIndex = firstIndexOfQuotes - 1;
-            }
-            else {
-               opBeginIndex = stmt.lastIndexOf(" ");
-            }
-         }
-         int opLength = op.length();
-         
-         predicate = predicate(stmt, opBeginIndex);
-         String value = value(stmt, opBeginIndex + opLength);
-         expression = assign(opType(op), value);
+         RelationalOperator operator = opType(op);
+         assign(operator, value(stmt, opEndIndex));
+         refine.setExpression(operator);
       }
-      refine.setPredicate(predicate);
-      refine.setExpression(expression);
-      
       return refine;
    }
 
-   private IExpression with(String stmt)
+   private WithExpression with(String stmt)
    {
       WithExpression with = new WithExpression();
       
-      stmt = truncate(stmt, Keyword.WITH, 0); // 0 = start from beginning of the string
-      
       String op = operator(stmt);
-      int opBeginIndex = stmt.indexOf(op);
+      int opBeginIndex = operatorBeginIndex(stmt, op);
+      int opLength = op.length();
+      int opEndIndex = opBeginIndex + opLength;
+      String predicate = predicate(stmt, opBeginIndex);
+      with.setPredicate(predicate);
+
+      RelationalOperator operator = opType(op);
+      assign(operator, value(stmt, opEndIndex));
+      with.setExpression(operator);
+      
+      return with;
+   }
+
+   private int operatorBeginIndex(String text, String op)
+   {
+      int opBeginIndex = -1;
       if (op.equals("")) {
-         int firstIndexOfQuotes = stmt.indexOf("\"");
+         int firstIndexOfQuotes = text.indexOf("\"");
          if (firstIndexOfQuotes != -1) {
             opBeginIndex = firstIndexOfQuotes - 1;
          }
          else {
-            opBeginIndex = stmt.lastIndexOf(" ");
+            opBeginIndex = text.lastIndexOf(" ");
          }
       }
-      int opLength = op.length();
-      
-      String predicate = predicate(stmt, opBeginIndex);
-      String value = value(stmt, opBeginIndex + opLength);
-      IExpression expression = assign(opType(op), value);
-      
-      with.setPredicate(predicate);
-      with.setExpression(expression);
-      
-      return with;
+      else {
+         opBeginIndex = text.indexOf(op);
+      }
+      return opBeginIndex;
    }
 
    private String operator(String stmt)
@@ -173,7 +166,7 @@ public class TinyParser implements IParser
       return StringUtils.substring(stmt, beginIndex, stmt.length());
    }
 
-   private IExpression assign(RelationalOperator op, String value)
+   private void assign(RelationalOperator op, String value)
    {
       List<String> values = Arrays.asList(value.split("\\s*and\\s*|\\s*,\\s*"));
       for (String v : values) {
@@ -193,12 +186,6 @@ public class TinyParser implements IParser
             op.addArgument(string);
          }
       }
-      return op;
-   }
-
-   private String truncate(String stmt, String word, int fromIndex)
-   {
-      return StringUtils.substring(stmt, fromIndex + word.length(), stmt.length());
    }
 
    private RelationalOperator opType(String op)
