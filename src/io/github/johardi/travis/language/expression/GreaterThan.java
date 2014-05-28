@@ -17,7 +17,7 @@
  */
 package io.github.johardi.travis.language.expression;
 
-public class GreaterThan extends RelationalOperator
+public class GreaterThan extends Operator
 {
    @Override
    public void accept(IExpressionVisitor visitor)
