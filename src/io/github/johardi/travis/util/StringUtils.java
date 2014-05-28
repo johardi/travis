@@ -54,18 +54,18 @@ public class StringUtils
       return text.toUpperCase();
    }
 
-   public static String substring(String input, int beginIndex, int endIndex)
+   public static String substring(String text, int beginIndex, int endIndex)
    {
-      return input.substring(beginIndex, endIndex).trim();
+      return text.substring(beginIndex, endIndex).trim();
    }
 
-   public static boolean enclosedByQuotes(String input)
+   public static boolean enclosedByQuotes(String text)
    {
-      return input.startsWith("\"") && input.endsWith("\""); //$NON-NLS-1$ //$NON-NLS-2$
+      return text.startsWith("\"") && text.endsWith("\""); //$NON-NLS-1$ //$NON-NLS-2$
    }
 
-   public static boolean isNumeric(String input)
+   public static boolean isNumeric(String text)
    {
-      return input.matches("-?\\d+(\\.\\d+)?"); //$NON-NLS-1$
+      return text.matches("-?\\d+(\\.\\d+)?"); //$NON-NLS-1$
    }
 }
