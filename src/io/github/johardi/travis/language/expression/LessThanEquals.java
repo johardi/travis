@@ -17,7 +17,7 @@
  */
 package io.github.johardi.travis.language.expression;
 
-public class LessThanEquals extends RelationalOperator
+public class LessThanEquals extends Operator
 {
    @Override
    public void accept(IExpressionVisitor visitor)

@@ -17,7 +17,7 @@
  */
 package io.github.johardi.travis.language.expression;
 
-public class Matches extends RelationalOperator
+public class Matches extends Operator
 {
    @Override
    public void accept(IExpressionVisitor visitor)

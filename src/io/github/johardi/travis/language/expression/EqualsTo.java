@@ -19,7 +19,7 @@ package io.github.johardi.travis.language.expression;
 
 import io.github.johardi.travis.util.StringUtils;
 
-public class EqualsTo extends RelationalOperator
+public class EqualsTo extends Operator
 {
    private boolean mUseRegex = false;
 

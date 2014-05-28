@@ -20,7 +20,7 @@ package io.github.johardi.travis.language.expression;
 import java.util.ArrayList;
 import java.util.List;
 
-public abstract class RelationalOperator implements IExpression
+public abstract class Operator implements IExpression
 {
    protected List<IExpression> mArguments;
 

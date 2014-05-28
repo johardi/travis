@@ -24,7 +24,7 @@ import io.github.johardi.travis.language.expression.GreaterThanEquals;
 import io.github.johardi.travis.language.expression.LessThan;
 import io.github.johardi.travis.language.expression.LessThanEquals;
 import io.github.johardi.travis.language.expression.NumericValue;
-import io.github.johardi.travis.language.expression.RelationalOperator;
+import io.github.johardi.travis.language.expression.Operator;
 import io.github.johardi.travis.language.expression.StringValue;
 import io.github.johardi.travis.language.expression.WithExpression;
 import io.github.johardi.travis.language.model.Find;
@@ -103,7 +103,7 @@ public class TinyParser implements IParser
          refine.setExpression(with);
       }
       else {
-         RelationalOperator operator = opType(op);
+         Operator operator = opType(op);
          assign(operator, value(stmt, opEndIndex));
          refine.setExpression(operator);
       }
@@ -121,7 +121,7 @@ public class TinyParser implements IParser
       String predicate = predicate(stmt, opBeginIndex);
       with.setPredicate(predicate);
 
-      RelationalOperator operator = opType(op);
+      Operator operator = opType(op);
       assign(operator, value(stmt, opEndIndex));
       with.setExpression(operator);
       
@@ -166,7 +166,7 @@ public class TinyParser implements IParser
       return StringUtils.substring(stmt, beginIndex, stmt.length());
    }
 
-   private void assign(RelationalOperator op, String value)
+   private void assign(Operator op, String value)
    {
       List<String> values = Arrays.asList(value.split("\\s*and\\s*|\\s*,\\s*"));
       for (String v : values) {
@@ -188,7 +188,7 @@ public class TinyParser implements IParser
       }
    }
 
-   private RelationalOperator opType(String op)
+   private Operator opType(String op)
    {
       switch (symbol(op)) {
          case OP_EQ: return new EqualsTo();

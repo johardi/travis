@@ -17,7 +17,7 @@
  */
 package io.github.johardi.travis.language.expression;
 
-public class Between extends RelationalOperator
+public class Between extends Operator
 {
    private IExpression mBetweenStart;
    private IExpression mBetweenEnd;
