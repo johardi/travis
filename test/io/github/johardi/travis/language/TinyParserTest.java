@@ -237,7 +237,10 @@ public class TinyParserTest
       @Override
       public void visit(WithExpression withExpression)
       {
-         // TODO Auto-generated method stub
+         mTracer.append("WITH ");
+         mTracer.append("(").append(withExpression.getPredicate()).append(")");
+         mTracer.append("/PREDICATE ");
+         withExpression.getExpression().accept(this);
       }
 
       private void visitArguments(List<IExpression> arguments)
