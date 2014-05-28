@@ -76,24 +76,19 @@ public class TinyParser implements IParser
    private Find find(String stmt)
    {
       Find find = new Find();
-      find.setEntity(entity(stmt));
+      find.setEntity(getEntityToken(stmt));
       return find;
-   }
-
-   private String entity(String stmt)
-   {
-      return stmt;
    }
 
    private Refine refine(String stmt)
    {
       Refine refine = new Refine();
       
-      String op = operator(stmt);
+      String op = getOperatorToken(stmt);
       int opBeginIndex = operatorBeginIndex(stmt, op);
       int opLength = op.length();
       int opEndIndex = opBeginIndex + opLength;
-      String predicate = predicate(stmt, opBeginIndex);
+      String predicate = getPredicateToken(stmt, opBeginIndex);
       refine.setPredicate(predicate);
       
       if (op.equals(Keyword.WITH)) {
@@ -103,26 +98,39 @@ public class TinyParser implements IParser
          refine.setExpression(with);
       }
       else {
-         Operator operator = opType(op);
-         assign(operator, value(stmt, opEndIndex));
+         Operator operator = operator(op);
+         assign(operator, getValueToken(stmt, opEndIndex));
          refine.setExpression(operator);
       }
       return refine;
+   }
+
+   private Operator operator(String op)
+   {
+      switch (symbol(op)) {
+         case OP_EQ: return new EqualsTo();
+         case OP_LT: return new LessThan();
+         case OP_GT: return new GreaterThan();
+         case OP_LTE: return new LessThanEquals();
+         case OP_GTE: return new GreaterThanEquals();
+         case OP_BETWEEN: return new Between();
+      }
+      throw new RuntimeException("Unknown operator: " + op);
    }
 
    private WithExpression with(String stmt)
    {
       WithExpression with = new WithExpression();
       
-      String op = operator(stmt);
+      String op = getOperatorToken(stmt);
       int opBeginIndex = operatorBeginIndex(stmt, op);
       int opLength = op.length();
       int opEndIndex = opBeginIndex + opLength;
-      String predicate = predicate(stmt, opBeginIndex);
+      String predicate = getPredicateToken(stmt, opBeginIndex);
       with.setPredicate(predicate);
 
-      Operator operator = opType(op);
-      assign(operator, value(stmt, opEndIndex));
+      Operator operator = operator(op);
+      assign(operator, getValueToken(stmt, opEndIndex));
       with.setExpression(operator);
       
       return with;
@@ -146,26 +154,6 @@ public class TinyParser implements IParser
       return opBeginIndex;
    }
 
-   private String operator(String stmt)
-   {
-      for (String op : Keyword.ALL_OPERATORS) {
-         if (stmt.contains(op)) {
-            return op;
-         }
-      }
-      return ""; //$NON-NLS-1$
-   }
-
-   private String predicate(String stmt, int endIndex)
-   {
-      return StringUtils.substring(stmt, 0, endIndex);
-   }
-
-   private String value(String stmt, int beginIndex)
-   {
-      return StringUtils.substring(stmt, beginIndex, stmt.length());
-   }
-
    private void assign(Operator op, String value)
    {
       List<String> values = Arrays.asList(value.split("\\s*and\\s*|\\s*,\\s*"));
@@ -186,19 +174,6 @@ public class TinyParser implements IParser
             op.addArgument(string);
          }
       }
-   }
-
-   private Operator opType(String op)
-   {
-      switch (symbol(op)) {
-         case OP_EQ: return new EqualsTo();
-         case OP_LT: return new LessThan();
-         case OP_GT: return new GreaterThan();
-         case OP_LTE: return new LessThanEquals();
-         case OP_GTE: return new GreaterThanEquals();
-         case OP_BETWEEN: return new Between();
-      }
-      throw new RuntimeException("Unknown operator: " + op);
    }
 
    private int symbol(String input)
@@ -242,5 +217,34 @@ public class TinyParser implements IParser
          return OP_BETWEEN;
       }
       return ERR;
+   }
+
+   /*
+    * Simple ad-hoc lexer methods to obtain a string token from a string text 
+    */
+
+   private String getEntityToken(String stmt)
+   {
+      return stmt;
+   }
+
+   private String getPredicateToken(String stmt, int endIndex)
+   {
+      return StringUtils.substring(stmt, 0, endIndex);
+   }
+
+   private String getValueToken(String stmt, int beginIndex)
+   {
+      return StringUtils.substring(stmt, beginIndex, stmt.length());
+   }
+
+   private String getOperatorToken(String stmt)
+   {
+      for (String op : Keyword.ALL_OPERATORS) {
+         if (stmt.contains(op)) {
+            return op;
+         }
+      }
+      return ""; //$NON-NLS-1$
    }
 }
