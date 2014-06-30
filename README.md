@@ -2,7 +2,7 @@ Travis Project
 ==============
 
 ```
-T.R.A.V.I.S : Totally Reasonable Asking Virtual Ingenious System
+T.R.A.V.I.S : To Realize Asking Very Intelligent System
 ```
 
 
